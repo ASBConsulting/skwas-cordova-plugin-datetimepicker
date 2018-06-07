@@ -123,8 +123,12 @@
 {
     NSString *mode = [optionsOrNil objectForKey:@"mode"];
     long long ticks = [[optionsOrNil objectForKey:@"ticks"] longLongValue];
-    long long minDate = [[optionsOrNil objectForKey:@"minDate"] longLongValue];
-    long long maxDate = [[optionsOrNil objectForKey:@"maxDate"] longLongValue];
+    
+    long long minDate = 0;
+    long long maxDate = 0;
+    if((id)[optionsOrNil objectForKey:@"minDate"]!=[NSNull null]) minDate = [[optionsOrNil objectForKey:@"minDate"] longLongValue];
+    if((id)[optionsOrNil objectForKey:@"maxDate"]!=[NSNull null]) minDate = [[optionsOrNil objectForKey:@"maxDate"] longLongValue];
+    
     NSString *localeString = [optionsOrNil objectForKey:@"locale"];
     NSString *okTextString = [optionsOrNil objectForKey:@"okText"];
     NSString *cancelTextString = [optionsOrNil objectForKey:@"cancelText"];
@@ -135,8 +139,8 @@
     if (localeString == nil || localeString.length == 0) localeString = @"EN";
     datePicker.locale = [[NSLocale alloc] initWithLocaleIdentifier:localeString];
 
-    if (okTextString == nil || okTextString.length == 0) okTextString = @"Select";
-    if (cancelTextString == nil || cancelTextString.length == 0) cancelTextString = @"Cancel";
+    if (okTextString == nil || (id)okTextString == [NSNull null] || okTextString.length == 0) okTextString = @"Select";
+    if (cancelTextString == nil || (id)cancelTextString == [NSNull null] || cancelTextString.length == 0) cancelTextString = @"Cancel";
 
     self.modalPicker.dismissText = okTextString;
     self.modalPicker.cancelText = cancelTextString;
@@ -183,4 +187,3 @@
 }
 
 @end
-
