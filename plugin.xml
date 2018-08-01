@@ -26,7 +26,7 @@ THE SOFTWARE.
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:rim="http://www.blackberry.com/ns/widgets"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="skwas-cordova-plugin-datetimepicker"
+    id="skwas-cordova-plugin-datetimepicker-asb"
     version="1.1.3">
     <name>DateTime picker</name>
     <description>Cordova DateTime picker plugin</description>
