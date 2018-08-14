@@ -123,6 +123,7 @@
 {
     NSString *mode = [optionsOrNil objectForKey:@"mode"];
     long long ticks = [[optionsOrNil objectForKey:@"ticks"] longLongValue];
+    NSString *date = [optionsOrNil objectForKey:@"date"];
     NSNumber *minDate = [optionsOrNil objectForKey:@"minDate"];
     NSNumber *maxDate = [optionsOrNil objectForKey:@"maxDate"];
     NSString *localeString = [optionsOrNil objectForKey:@"locale"];
@@ -131,7 +132,7 @@
     BOOL allowOldDates = [[optionsOrNil objectForKey:@"allowOldDates"] intValue] == 1 ? YES : NO;
     BOOL allowFutureDates = [[optionsOrNil objectForKey:@"allowFutureDates"] intValue] == 1 ? YES : NO;
     NSInteger minuteInterval = [[optionsOrNil objectForKey:@"minuteInterval"] intValue];
-    
+
     if (localeString == nil || localeString.length == 0) localeString = @"EN";
     datePicker.locale = [[NSLocale alloc] initWithLocaleIdentifier:localeString];
 
@@ -143,13 +144,15 @@
 
     if (!allowOldDates) datePicker.minimumDate = [NSDate date];
     if (!allowFutureDates) datePicker.maximumDate = [NSDate date];
-    
+
     if (minDate != nil && minDate != (id)[NSNull null]) {
         datePicker.minimumDate = [NSDate dateWithTimeIntervalSince1970:([minDate longLongValue] / 1000)];
     }
+
     if (maxDate != nil && maxDate != (id)[NSNull null] && (!(minDate != nil && minDate != (id)[NSNull null]) || maxDate > minDate)) {
         datePicker.maximumDate = [NSDate dateWithTimeIntervalSince1970:([maxDate longLongValue] / 1000)];
     }
+
     
     if ([mode isEqualToString:@"date"])
         datePicker.datePickerMode = UIDatePickerModeDate;
@@ -159,10 +162,25 @@
         datePicker.datePickerMode = UIDatePickerModeDateAndTime;
     
     datePicker.minuteInterval = minuteInterval;
+	
+    NSDate* _date = nil;
     
-    // Set to something else first, to force an update.
-    datePicker.date = [NSDate dateWithTimeIntervalSince1970:0];
-    datePicker.date = [self getRoundedDate:[[NSDate alloc] initWithTimeIntervalSince1970:(ticks / 1000)] minuteInterval:minuteInterval];
+    if(date != nil && date != (id)[NSNull null]){
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZ"];
+        // Always use this locale when parsing fixed format date strings
+        NSLocale *posix = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        [formatter setLocale:posix];
+        _date = [formatter dateFromString:date];
+    }
+    
+    if(_date == nil){
+        // Set to something else first, to force an update.
+        datePicker.date = [NSDate dateWithTimeIntervalSince1970:0];
+        datePicker.date = [self getRoundedDate:[[NSDate alloc] initWithTimeIntervalSince1970:(ticks / 1000)] minuteInterval:minuteInterval];
+    }else{
+        datePicker.date = _date;
+    }
 }
 
 // Sends the date to the plugin javascript handler.
